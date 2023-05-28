@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { create } from '../services/userService'
+import { authenticate, create } from '../services/userService'
 
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
 
@@ -13,4 +13,15 @@ export const createUser = async (req: Request, res: Response): Promise<Response>
     }
 
     return res.status(200).json({ message: 'User successfully created' });
+}
+
+export const authenticateUser = async (req: Request, res: Response): Promise<Response> => {
+
+    const { email, password } = req.body;
+
+    const token = await authenticate( { email, password } );
+
+    if(!token) return res.status(400).json({ messsage: 'Authentication failed' });
+
+    return res.status(200).json({ token });
 }

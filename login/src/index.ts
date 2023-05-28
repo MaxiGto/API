@@ -4,7 +4,7 @@ dotenv.config();
 import express, { Application, Request, Response } from 'express';
 
 import dbConnection from '../../database/dbConnection'
-import usersRoutes from './routes/users';
+import usersRoutes from './routes/usersRoutes';
 
 
 const app : Application = express();
@@ -20,7 +20,7 @@ app.get('/ping', (_req: Request, res: Response) =>{
     res.send('pong');
 });
 
-app.use('/api/users', usersRoutes);
+app.use('/api', usersRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
