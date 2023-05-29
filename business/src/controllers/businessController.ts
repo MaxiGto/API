@@ -10,7 +10,7 @@ export const listUsers = async (req: Request, res: Response): Promise<Response> 
         return res.status(401).json({msg: 'Access Unauthorized'});
     }
 
-    const { page, limit } = req.headers;
+    const { page, limit, email } = req.headers;
     let nPage : number = Number(page);
     let nLimit : number = Number(limit);
 
@@ -22,7 +22,9 @@ export const listUsers = async (req: Request, res: Response): Promise<Response> 
     }
     const skip = (nPage - 1) * nLimit;
 
-    const users = await userSchema.find().skip(skip).limit(nLimit);
+    const regex = new RegExp(<string>email, "i");
+
+    const users = await userSchema.find({ email: { $regex: regex } }).skip(skip).limit(nLimit);
 
     return res.status(200).json(users);
    

@@ -41,12 +41,12 @@ export const authenticate = async (user: ICreateUser): Promise<string | undefine
 
 }
 
-export const list = async (token : string, page: number, limit: number): Promise<UserDB[]> => {
+export const list = async (token : string, page: number, limit: number, email?: string): Promise<UserDB[]> => {
 
     const url : string = `${process.env.DOMAIN_BS}/api/list`;
     const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
 
-    const { data: users } : AxiosResponse = await axios.get(url, { headers: {id: 1, referer: refererUrl, 'x-auth-token': token, page, limit }});
+    const { data: users } : AxiosResponse = await axios.get(url, { headers: {id: 1, referer: refererUrl, 'x-auth-token': token, page, limit, email }});
 
     return users;
 }

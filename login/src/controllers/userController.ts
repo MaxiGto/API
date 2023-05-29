@@ -28,9 +28,10 @@ export const authenticateUser = async (req: Request, res: Response): Promise<Res
 
 export const listUsers = async (req: Request, res: Response): Promise<Response> => {
 
-    const { page, limit } = req.query;
+    const { page, limit, email } = req.query;
     let nPage : number = Number(page);
     let nLimit : number = Number(limit);
+    let nEmail : string = '';
 
     if(!page || Number(page) < 1 || isNaN(nPage)){
         nPage = 1;
@@ -38,8 +39,9 @@ export const listUsers = async (req: Request, res: Response): Promise<Response> 
     if(!nLimit || Number(nLimit) < 1 || isNaN(nLimit)){
         nLimit = 10;
     }
+    if(email) nEmail = String(email);
 
-    const users = await list(<string>req.headers['x-auth-token'], nPage, nLimit);
+    const users = await list(<string>req.headers['x-auth-token'], nPage, nLimit, nEmail);
 
     return res.status(200).json({ users });
 
