@@ -17,5 +17,15 @@ const UserSchema = new mongoose.Schema({
     versionKey: false 
 });
 
+UserSchema.methods.toJSON = function() {
+
+    const { __v, _id, password, ...usuario } = this.toObject();
+
+    usuario.id = _id;
+
+    return usuario;
+
+}
+
 
 export default mongoose.model('User', UserSchema);
