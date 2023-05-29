@@ -22,6 +22,8 @@ app.get('/ping', (_req: Request, res: Response) =>{
 
 app.use('/api', businessRoutes);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+export { app, server }
