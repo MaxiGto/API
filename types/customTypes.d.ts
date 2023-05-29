@@ -15,5 +15,10 @@ export interface UserDB {
     password: string;
 }
 
-export type ICreateUser = Omit<UserDB, '_id'>
+export type UserCredentials = Omit<UserDB, '_id'>
 
+export interface listingParams {
+  page?: number;
+  limit?: number;
+  email?: string;
+}

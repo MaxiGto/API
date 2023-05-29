@@ -2,11 +2,11 @@ import bcrypt from 'bcrypt';
 import axios, { AxiosResponse } from 'axios';
 
 import UserSchema from '../models/User';
-import { ICreateUser, UserDB } from '../../../types/customTypes';
+import { UserCredentials, UserDB } from '../../../types/customTypes';
 import { generateJWT } from '../../../helpers/generateJWT';
 
 
-export const create = async (user: ICreateUser): Promise<boolean> => {
+export const create = async (user: UserCredentials): Promise<boolean> => {
 
     const { email, password } = user;
 
@@ -23,7 +23,7 @@ export const create = async (user: ICreateUser): Promise<boolean> => {
     return true;
 }
 
-export const authenticate = async (user: ICreateUser): Promise<string | undefined> => {
+export const authenticate = async (user: UserCredentials): Promise<string | undefined> => {
 
     const { email, password } = user;
 
@@ -41,12 +41,21 @@ export const authenticate = async (user: ICreateUser): Promise<string | undefine
 
 }
 
-export const list = async (token : string, page: number, limit: number, email?: string): Promise<UserDB[]> => {
+export const list = async (token : string, page?: number, limit?: number, email?: string): Promise<UserDB[]> => {
 
     const url : string = `${process.env.DOMAIN_BS}/api/list`;
     const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
 
-    const { data: users } : AxiosResponse = await axios.get(url, { headers: {id: 1, referer: refererUrl, 'x-auth-token': token, page, limit, email }});
+    const { data: users } : AxiosResponse = await axios.get(url, { 
+        headers: {
+            referer: refererUrl, 'Authorization': token 
+        },
+        params: { 
+            page, 
+            limit, 
+            email
+        }}
+    );
 
     return users;
 }

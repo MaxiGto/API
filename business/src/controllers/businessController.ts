@@ -1,30 +1,32 @@
 import { Request, Response } from 'express';
 
 import userSchema from '../../../login/src/models/User';
+import { listingParams } from '../../../types/customTypes';
 
 export const listUsers = async (req: Request, res: Response): Promise<Response> => {
 
-    const accessPoints : string[] = [`${process.env.DOMAIN_LG}${req.originalUrl}`];
+    const accessPoints : string[] = [`${process.env.DOMAIN_LG}/api/list`];
 
     if(!req.headers.referer || !accessPoints.includes(req.headers.referer)){
-        return res.status(401).json({msg: 'Access Unauthorized'});
+        return res.status(401).json({message: 'Access Unauthorized'});
     }
 
-    const { page, limit, email } = req.headers;
-    let nPage : number = Number(page);
-    let nLimit : number = Number(limit);
+    let { page, limit, email } : listingParams = req.query;
 
-    if(!page || Number(page) < 1 || isNaN(nPage)){
-        nPage = 1;
+    if(page && isNaN(page)) page = 1;
+    if(limit && isNaN(limit)) limit = 10;
+    if(!email) email = '';
+    const regex = new RegExp(email, "i");
+
+    let query = userSchema.find({ email: { $regex: regex } });
+    if(page){
+        if(!limit || isNaN(limit)) limit = 10; 
+        const skip = (page - 1) * limit;
+        query.skip(skip)
     }
-    if(!nLimit || Number(nLimit) < 1 || isNaN(nLimit)){
-        nLimit = 10;
-    }
-    const skip = (nPage - 1) * nLimit;
+    if(limit) query.limit(limit)
 
-    const regex = new RegExp(<string>email, "i");
-
-    const users = await userSchema.find({ email: { $regex: regex } }).skip(skip).limit(nLimit);
+    const users = await query;
 
     return res.status(200).json(users);
    
