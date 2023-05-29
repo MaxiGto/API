@@ -7,8 +7,9 @@ import mongoose from 'mongoose';
 
 
 const dbConnection = async (): Promise<void> => {
+    const DB_URL = process.env.NODE_ENV === 'test' ? process.env.DATABASE_URL_TEST : process.env.DATABASE_URL;
     try {
-        await mongoose.connect((process.env.DATABASE_URL as string));
+        await mongoose.connect(DB_URL!);
         console.log('DB connected');
     } catch (error) {
         console.log(error);
