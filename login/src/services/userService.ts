@@ -1,10 +1,12 @@
 import bcrypt from 'bcrypt';
+import axios, { AxiosResponse } from 'axios';
 
 import UserSchema from '../models/User';
-import { User } from '../../../types/customTypes';
-import { generateJWT } from '../helpers/generateJWT';
+import { ICreateUser, UserDB } from '../../../types/customTypes';
+import { generateJWT } from '../../../helpers/generateJWT';
 
-export const create = async (user: User): Promise<boolean> => {
+
+export const create = async (user: ICreateUser): Promise<boolean> => {
 
     const { email, password } = user;
 
@@ -21,11 +23,11 @@ export const create = async (user: User): Promise<boolean> => {
     return true;
 }
 
-export const authenticate = async (user: User): Promise<string | undefined> => {
+export const authenticate = async (user: ICreateUser): Promise<string | undefined> => {
 
     const { email, password } = user;
 
-    const existingUser = await UserSchema.findOne({email});
+    const existingUser : UserDB | null = await UserSchema.findOne({email});
 
     if(!existingUser) return;
 
@@ -37,4 +39,14 @@ export const authenticate = async (user: User): Promise<string | undefined> => {
 
     return token;
 
+}
+
+export const list = async (token : string, page: number, limit: number): Promise<UserDB[]> => {
+
+    const url : string = `${process.env.DOMAIN_BS}/api/list`;
+    const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
+
+    const { data: users } : AxiosResponse = await axios.get(url, { headers: {id: 1, referer: refererUrl, 'x-auth-token': token, page, limit }});
+
+    return users;
 }
