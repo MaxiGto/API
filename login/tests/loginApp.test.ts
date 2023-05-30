@@ -2,14 +2,13 @@ import supertest, { Response } from 'supertest';
 import mongoose from 'mongoose';
 
 import { app, server } from '../src/index';
-import { app as bsApp, server as bsServer } from '../../business/src/index';
+import { server as bsServer } from '../../business/src/index';
 import dbConnection from '../../database/dbConnection';
 import User from '../src/models/User';
 import { UserCredentials } from '../../types/customTypes';
 import users from '../../database/users.json';
 
 const api = supertest(app);
-supertest(bsApp);
 
 beforeAll(async () => {
     process.env.NODE_ENV = 'test';
@@ -116,6 +115,8 @@ describe('User listing', () => {
   let token : string;
 
   beforeAll(async() => {
+    bsServer;
+
     const payload : UserCredentials = {
       email: 'example@example.com',
       password: '123456',
