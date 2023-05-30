@@ -7,6 +7,9 @@ export const listUsers = async (req: Request, res: Response): Promise<Response> 
 
     const accessPoints : string[] = [`${process.env.DOMAIN_LG}/api/list`];
 
+    console.log(accessPoints);
+    console.log(req.headers.referer);
+
     if(!req.headers.referer || !accessPoints.includes(req.headers.referer)){
         return res.status(401).json({message: 'Access Unauthorized'});
     }
