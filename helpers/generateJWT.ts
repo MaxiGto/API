@@ -15,7 +15,6 @@ export const generateJWT = ( user: UserDB): Promise<string> => {
             if(token) {
                 resolve(token);
             } else if (err) {
-                console.log(err);
                 reject('Could not generate JWT');
             }
 
