@@ -14,4 +14,13 @@ const dbConnection = async (): Promise<void> => {
     }
 }
 
+export const dbDisconnection = async (): Promise<void> => {
+    try {
+        await mongoose.connection.close();
+        console.log('DB disconnected');
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export default dbConnection;

@@ -9,7 +9,8 @@
     "dev-bs": "ts-node-dev business/src/index.ts",
     "start-bs": "node business/build/index.js",
     "tsc": "tsc",
-    "test": "jest --verbose --silent"
+    "test-lg": "node \"node_modules/jest/bin/jest.js\" \"login/tests/loginApp.test.ts\" -t \"Login microservice\" --silent",
+    "test-bs": "node \"node_modules/jest/bin/jest.js\" \"business/test/businessApp.test.ts\" -t \"Business microservice\" --silent"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.1"
   },

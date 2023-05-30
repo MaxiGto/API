@@ -1,9 +1,8 @@
 import supertest, { Response } from 'supertest';
-import mongoose from 'mongoose';
 
 import { app, server } from '../src/index';
 import { server as bsServer } from '../../business/src/index';
-import dbConnection from '../../database/dbConnection';
+import dbConnection, { dbDisconnection } from '../../database/dbConnection';
 import User from '../src/models/User';
 import { UserCredentials } from '../../types/customTypes';
 import users from '../../database/users.json';
@@ -193,7 +192,7 @@ describe('Login microservice', () => {
   });
 
   afterAll(async () => {
-      mongoose.connection.close();
+    await dbDisconnection();
       server.close();
       bsServer.close();
   });
