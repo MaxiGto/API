@@ -1,5 +1,3 @@
-//import { ProcessEnv } from '../types/types'; 
-
 import dotenv from 'dotenv';
 dotenv.config();
 
