@@ -59,7 +59,7 @@ describe('Login microservice', () => {
 
       });
 
-      afterAll(async () => {
+      afterEach(async () => {
         await User.deleteOne({email: 'test@example.com'});
       })
 

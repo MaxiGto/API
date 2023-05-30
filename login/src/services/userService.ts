@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 
 import UserSchema from '../models/User';
 import { UserCredentials, UserDB, UsersListResult } from '../../../types/customTypes';
 import { generateJWT } from '../../../helpers/generateJWT';
+import { httpClientGet } from '../../../helpers/httpClient';
 
 
 export const create = async (user: UserCredentials): Promise<boolean> => {
@@ -47,21 +48,19 @@ export const list = async (token : string, page?: number, limit?: number, email?
     const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
 
     let response : AxiosResponse;
+    const config : Object = { 
+        headers: {
+            referer: refererUrl, 'Authorization': token 
+        },
+        params: { 
+            page, 
+            limit, 
+            email
+        }}
 
     try {
-        response = await axios.get(url, { 
-            headers: {
-                referer: refererUrl, 'Authorization': token 
-            },
-            params: { 
-                page, 
-                limit, 
-                email
-            }}
-        );
-
-    } catch (error) {
-
+        response = await httpClientGet(url, config);
+    } catch (_error) {
        return {
         ok: false,
         users: []
