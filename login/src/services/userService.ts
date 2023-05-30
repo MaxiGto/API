@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { AxiosResponse } from 'axios';
 
 import UserSchema from '../models/User';
 import { UserCredentials, UserDB, UsersListResult } from '../../../types/customTypes';
