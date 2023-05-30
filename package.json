@@ -6,7 +6,7 @@
   "scripts": {
     "dev-lg": "ts-node-dev login/src/index.ts",
     "dev-bs": "ts-node-dev business/src/index.ts",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "test-lg": "node \"node_modules/jest/bin/jest.js\" \"login/tests/loginApp.test.ts\" -t \"Login microservice\"",
     "test-bs": "node \"node_modules/jest/bin/jest.js\" \"business/test/businessApp.test.ts\" -t \"Business microservice\" --silent",
     "start": "node ./build/login/src/index.js",
