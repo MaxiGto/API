@@ -8,191 +8,194 @@ import User from '../src/models/User';
 import { UserCredentials } from '../../types/customTypes';
 import users from '../../database/users.json';
 
-const api = supertest(app);
+describe('Login microservice', () => {
 
-beforeAll(async () => {
-    process.env.NODE_ENV = 'test';
-    await dbConnection();
+  const api = supertest(app);
 
-    await User.deleteMany();
+  beforeAll(async () => {
+      process.env.NODE_ENV = 'test';
+      await dbConnection();
 
-    for await(const user of users){
+      await User.deleteMany();
 
-      const { email, password } : UserCredentials = user;
+      for await(const user of users){
 
-      await api
-      .post('/api/register')
-      .send( { email, password } );
-    }
-});
+        const { email, password } : UserCredentials = user;
 
-describe('User registration', () => {
-
-    test('should register a new user', async () => {
-      const payload : UserCredentials = {
-        email: 'test@example.com',
-        password: '123456',
-      }
-
-      const response : Response = await api
+        await api
         .post('/api/register')
-        .send(payload);
-  
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('message', 'User successfully created');
+        .send( { email, password } );
+      }
+  });
 
-    });
+  describe('User registration', () => {
 
-    test('user already exists', async () => {
-      const payload : UserCredentials= {
+      test('should register a new user', async () => {
+        const payload : UserCredentials = {
+          email: 'test@example.com',
+          password: '123456',
+        }
+
+        const response : Response = await api
+          .post('/api/register')
+          .send(payload);
+    
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message', 'User successfully created');
+
+      });
+
+      test('user already exists', async () => {
+        const payload : UserCredentials= {
+          email: 'example@example.com',
+          password: '123456',
+        }
+
+        const response : Response = await api
+          .post('/api/register')
+          .send(payload);
+    
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('message', 'User already exists');
+
+      });
+
+      afterAll(async () => {
+        await User.deleteOne({email: 'test@example.com'});
+      })
+
+  })
+
+  describe('User authentication', () => {
+    test('successful athentication', async () => {
+      const payload : UserCredentials = {
         email: 'example@example.com',
         password: '123456',
       }
 
       const response : Response = await api
-        .post('/api/register')
-        .send(payload);
-  
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'User already exists');
+          .post('/api/auth')
+          .send(payload);
 
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('token');
+        expect(typeof response.body.token).toBe('string');
     });
 
-    afterAll(async () => {
-      await User.deleteOne({email: 'test@example.com'});
-    })
+    test('failed athentication - wrong email', async () => {
+      const payload : UserCredentials = {
+        email: 'example@gmail.com',
+        password: '123456',
+      }
 
-})
+      const response : Response = await api
+          .post('/api/auth')
+          .send(payload);
 
-describe('User authentication', () => {
-  test('successful athentication', async () => {
-    const payload : UserCredentials = {
-      email: 'example@example.com',
-      password: '123456',
-    }
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('message', 'Authentication failed');
+    });
 
-    const response : Response = await api
-        .post('/api/auth')
-        .send(payload);
+    test('failed athentication - wrong password', async () => {
+      const payload : UserCredentials = {
+        email: 'example@example.com',
+        password: '12345',
+      }
 
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('token');
-      expect(typeof response.body.token).toBe('string');
+      const response : Response = await api
+          .post('/api/auth')
+          .send(payload);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('message', 'Authentication failed');
+    });
+
   });
 
-  test('failed athentication - wrong email', async () => {
-    const payload : UserCredentials = {
-      email: 'example@gmail.com',
-      password: '123456',
-    }
+  describe('User listing', () => {
 
-    const response : Response = await api
-        .post('/api/auth')
-        .send(payload);
+    let token : string;
 
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'Authentication failed');
+    beforeAll(async() => {
+      bsServer;
+
+      const payload : UserCredentials = {
+        email: 'example@example.com',
+        password: '123456',
+      }
+
+      const response : Response = await api
+          .post('/api/auth')
+          .send(payload);
+
+      token = response.body.token;
+    });
+
+    test('Bad request - token missing', async () => {
+
+      const response : Response = await api
+        .get('/api/list')
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('message','Token missing');
+    });
+
+    test('Unauthorized - invalid token', async () => {
+
+      const response : Response = await api
+        .get('/api/list')
+        .set('Authorization', 'fake-token');
+
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('message','Invalid token');
+    });
+
+    test('should list all users', async () => {
+
+      const response : Response = await api
+        .get('/api/list')
+        .set('Authorization', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('users');
+        expect(response.body.users).toHaveLength(users.length);
+    });
+
+    test('should list a maximum number of users', async () => {
+
+      const limit : number = 5;
+
+      const response : Response = await api
+        .get(`/api/list?limit=${limit}`)
+        .set('Authorization', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('users');
+        expect(response.body.users).toHaveLength(limit);
+    });
+
+    test('should list all users with email matching search', async () => {
+
+      const email : string = 'test';
+      const regex : RegExp = new RegExp(email);
+
+      const requestedUsers : UserCredentials[] = users.filter(user => user.email.match(regex));
+
+      const response : Response = await api
+        .get(`/api/list?email=${email}`)
+        .set('Authorization', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('users');
+        expect(response.body.users).toHaveLength(requestedUsers.length);
+    });
+
   });
 
-  test('failed athentication - wrong password', async () => {
-    const payload : UserCredentials = {
-      email: 'example@example.com',
-      password: '12345',
-    }
-
-    const response : Response = await api
-        .post('/api/auth')
-        .send(payload);
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'Authentication failed');
-  });
-
-});
-
-describe('User listing', () => {
-
-  let token : string;
-
-  beforeAll(async() => {
-    bsServer;
-
-    const payload : UserCredentials = {
-      email: 'example@example.com',
-      password: '123456',
-    }
-
-    const response : Response = await api
-        .post('/api/auth')
-        .send(payload);
-
-    token = response.body.token;
-  });
-
-  test('Bad request - token missing', async () => {
-
-    const response : Response = await api
-      .get('/api/list')
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message','Token missing');
-  });
-
-  test('Unauthorized - invalid token', async () => {
-
-    const response : Response = await api
-      .get('/api/list')
-      .set('Authorization', 'fake-token');
-
-      expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message','Invalid token');
-  });
-
-  test('should list all users', async () => {
-
-    const response : Response = await api
-      .get('/api/list')
-      .set('Authorization', token);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('users');
-      expect(response.body.users).toHaveLength(users.length);
-  });
-
-  test('should list a maximum number of users', async () => {
-
-    const limit : number = 5;
-
-    const response : Response = await api
-      .get(`/api/list?limit=${limit}`)
-      .set('Authorization', token);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('users');
-      expect(response.body.users).toHaveLength(limit);
-  });
-
-  test('should list all users with email matching search', async () => {
-
-    const email : string = 'test';
-    const regex : RegExp = new RegExp(email);
-
-    const requestedUsers : UserCredentials[] = users.filter(user => user.email.match(regex));
-
-    const response : Response = await api
-      .get(`/api/list?email=${email}`)
-      .set('Authorization', token);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('users');
-      expect(response.body.users).toHaveLength(requestedUsers.length);
+  afterAll(async () => {
+      mongoose.connection.close();
+      server.close();
+      bsServer.close();
   });
 
 });
-
-afterAll(async () => {
-    mongoose.connection.close();
-    server.close();
-    bsServer.close();
-});
-
