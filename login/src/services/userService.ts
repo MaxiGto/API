@@ -47,7 +47,9 @@ export const list = async (token : string, page?: number, limit?: number, email?
     const url : string = `${process.env.DOMAIN_BS}/api/list`;
     const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
 
-    let response : AxiosResponse;
+    console.log(url, refererUrl, token);
+
+    let response;
     const config : Object = { 
         headers: {
             referer: refererUrl, 'Authorization': token 
@@ -60,7 +62,8 @@ export const list = async (token : string, page?: number, limit?: number, email?
 
     try {
         response = await httpClientGet(url, config);
-    } catch (_error) {
+    } catch (error) {
+        console.log(error);
        return {
         ok: false,
         users: []
