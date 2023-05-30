@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev-lg": "ts-node-dev login/src/index.ts",
-    "start-lg": "node build/login/src/index.js",
     "dev-bs": "ts-node-dev business/src/index.ts",
-    "start-bs": "node build/business/src/index.js",
     "build": "tsc",
     "test-lg": "node \"node_modules/jest/bin/jest.js\" \"login/tests/loginApp.test.ts\" -t \"Login microservice\"",
-    "test-bs": "node \"node_modules/jest/bin/jest.js\" \"business/test/businessApp.test.ts\" -t \"Business microservice\" --silent"
+    "test-bs": "node \"node_modules/jest/bin/jest.js\" \"business/test/businessApp.test.ts\" -t \"Business microservice\" --silent",
+    "start": "node ./build/login/src/index.js",
+    "start:business": "node ./build/business/src/index.js"
   },
   "keywords": [],
   "author": "",
