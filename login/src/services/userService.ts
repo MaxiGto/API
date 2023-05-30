@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import axios, { AxiosResponse } from 'axios';
 
 import UserSchema from '../models/User';
-import { UserCredentials, UserDB } from '../../../types/customTypes';
+import { UserCredentials, UserDB, UsersListResult } from '../../../types/customTypes';
 import { generateJWT } from '../../../helpers/generateJWT';
 
 
@@ -41,21 +41,37 @@ export const authenticate = async (user: UserCredentials): Promise<string | unde
 
 }
 
-export const list = async (token : string, page?: number, limit?: number, email?: string): Promise<UserDB[]> => {
+export const list = async (token : string, page?: number, limit?: number, email?: string): Promise<UsersListResult> => {
 
     const url : string = `${process.env.DOMAIN_BS}/api/list`;
     const refererUrl : string = `${process.env.DOMAIN_LG}/api/list`;
 
-    const { data: users } : AxiosResponse = await axios.get(url, { 
-        headers: {
-            referer: refererUrl, 'Authorization': token 
-        },
-        params: { 
-            page, 
-            limit, 
-            email
-        }}
-    );
+    let response : AxiosResponse;
 
-    return users;
+    try {
+        response = await axios.get(url, { 
+            headers: {
+                referer: refererUrl, 'Authorization': token 
+            },
+            params: { 
+                page, 
+                limit, 
+                email
+            }}
+        );
+
+    } catch (error) {
+
+       return {
+        ok: false,
+        users: []
+       };
+    }
+
+    const usersList : UsersListResult = {
+        ok: true,
+        users: response.data
+    }
+
+    return usersList;
 }

@@ -22,3 +22,8 @@ export interface listingParams {
   limit?: number;
   email?: string;
 }
+
+export interface UsersListResult {
+  ok: boolean;
+  users: UserCredentials[];
+}

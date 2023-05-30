@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { authenticate, create, list } from '../services/userService'
-import { listingParams } from '../../../types/customTypes';
+import { UsersListResult, listingParams } from '../../../types/customTypes';
 
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
 
@@ -31,8 +31,13 @@ export const listUsers = async (req: Request, res: Response): Promise<Response> 
 
     const { page, limit, email } : listingParams = req.query;
 
+    const result : UsersListResult = await list(<string>req.headers['authorization'], page, limit, email);
 
-    const users = await list(<string>req.headers['Authorization'], page, limit, email);
+    const { ok, users } = result;
+
+    if(!ok){
+        return res.status(500).json({ message: 'Error fetching users list' });
+    }
 
     return res.status(200).json({ users });
 
