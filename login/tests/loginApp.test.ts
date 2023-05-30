@@ -2,19 +2,17 @@ import supertest, { Response } from 'supertest';
 
 import { app, server } from '../src/index';
 import { server as bsServer } from '../../business/src/index';
-import dbConnection, { dbDisconnection } from '../../database/dbConnection';
+import { dbDisconnection } from '../../database/dbConnection';
 import User from '../src/models/User';
 import { UserCredentials } from '../../types/customTypes';
 import users from '../../database/users.json';
 
 describe('Login microservice', () => {
 
+  process.env.NODE_ENV = 'test';
   const api = supertest(app);
 
   beforeAll(async () => {
-      process.env.NODE_ENV = 'test';
-      await dbConnection();
-
       await User.deleteMany();
 
       for await(const user of users){

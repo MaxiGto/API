@@ -10,10 +10,7 @@ const apiLG = supertest(app);
 
 describe('Business microservice', () => {
 
-    beforeAll(async () => {
-        process.env.NODE_ENV = 'test';
-        await dbConnection();
-    });
+    process.env.NODE_ENV = 'test';
 
     describe('User listing', () => {
 
