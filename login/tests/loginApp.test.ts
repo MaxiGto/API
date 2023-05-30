@@ -79,7 +79,7 @@ describe('Login microservice', () => {
         expect(typeof response.body.token).toBe('string');
     });
 
-    test('failed athentication - wrong email', async () => {
+    test('failed authentication - wrong email', async () => {
       const payload : UserCredentials = {
         email: 'example@gmail.com',
         password: '123456',
@@ -93,7 +93,7 @@ describe('Login microservice', () => {
         expect(response.body).toHaveProperty('message', 'Authentication failed');
     });
 
-    test('failed athentication - wrong password', async () => {
+    test('failed authentication - wrong password', async () => {
       const payload : UserCredentials = {
         email: 'example@example.com',
         password: '12345',
