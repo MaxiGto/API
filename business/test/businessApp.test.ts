@@ -2,7 +2,7 @@ import supertest, { Response } from 'supertest';
 
 import { app, server } from '../../login/src/index';
 import { app as bsApp, server as bsServer } from '../src/index';
-import dbConnection, { dbDisconnection } from '../../database/dbConnection';
+import { dbDisconnection } from '../../database/dbConnection';
 import { UserCredentials } from '../../types/customTypes';
 
 const apiBS = supertest(bsApp);
