@@ -32,10 +32,6 @@ Lo indicado con -lg corresponde al módulo de login, mientras que lo indicado co
 # development
 $ npm run dev-lg
 $ npm run dev-bs
-
-# production
-$ npm run start-lg
-$ npm run start-bs
 ```
 
 ## Endpoints Login
@@ -107,19 +103,38 @@ $ npm run test-bs
 ```
 Ejecuta todos los tests correspondientes al módulo de negocios.
 
+## Build local
+
+Se puede crear un build para producción con el siguiente comando
+
+```bash
+$ npm run build
+```
+
+Posteriormente se debe ejecutar el/los modulo/s deseado/s utilizando:
+
+```bash
+# production
+$ npm run start-lg
+$ npm run start-bs
+```
+
 ## Deploys
 
 El proyecto se encuentra desplegado y se puede probar también utilizando los siguientes enlaces:
+
+Módulo de login
 ```
 https://api-login-4fxo.onrender.com
 ``` 
-Módulo de login
 
 
+Módulo de negocios
 ```
 https://api-business-v7k7.onrender.com
 ``` 
-Módulo de negocios
+
+
 
 
 
