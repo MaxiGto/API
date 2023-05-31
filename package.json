@@ -7,10 +7,10 @@
     "dev-lg": "ts-node-dev login/src/index.ts",
     "dev-bs": "ts-node-dev business/src/index.ts",
     "build": "npm install && tsc",
-    "test-lg": "node \"node_modules/jest/bin/jest.js\" \"login/tests/loginApp.test.ts\" -t \"Login microservice\"",
+    "test-lg": "node \"node_modules/jest/bin/jest.js\" \"login/tests/loginApp.test.ts\" -t \"Login microservice\" --silent",
     "test-bs": "node \"node_modules/jest/bin/jest.js\" \"business/test/businessApp.test.ts\" -t \"Business microservice\" --silent",
-    "start": "node ./build/login/src/index.js",
-    "start:business": "node ./build/business/src/index.js"
+    "start-lg": "node ./build/login/src/index.js",
+    "start-bs": "node ./build/business/src/index.js"
   },
   "keywords": [],
   "author": "",
