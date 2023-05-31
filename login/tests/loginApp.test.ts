@@ -57,6 +57,39 @@ describe('Login microservice', () => {
 
       });
 
+      test('invalid email', async () => {
+        const payload : UserCredentials= {
+          email: 'invalidEmail',
+          password: '123456',
+        }
+
+        const response : Response = await api
+          .post('/api/register')
+          .send(payload);
+    
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+        expect(response.body.errors).toHaveLength(1);
+        expect(response.body.errors[0]).toHaveProperty('msg', 'Invalid email format');
+      });
+
+      test('short password', async () => {
+        const payload : UserCredentials= {
+          email: 'email@email.com',
+          password: '12345',
+        }
+
+        const response : Response = await api
+          .post('/api/register')
+          .send(payload);
+    
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+        expect(response.body.errors).toHaveLength(1);
+        expect(response.body.errors[0]).toHaveProperty('msg', 'Password must contain at least 6 characters');
+      });
+
+
       afterEach(async () => {
         await User.deleteOne({email: 'test@example.com'});
       })
@@ -105,6 +138,38 @@ describe('Login microservice', () => {
 
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('message', 'Authentication failed');
+    });
+
+    test('failed authentication - email required', async () => {
+      const payload = {
+        password: '123456',
+      }
+
+      const response : Response = await api
+        .post('/api/register')
+        .send(payload);
+  
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('errors');
+      expect(response.body.errors).toHaveLength(2);
+      expect(response.body.errors[0]).toHaveProperty('msg', 'Email is required');
+      expect(response.body.errors[1]).toHaveProperty('msg', 'Invalid email format');
+    });
+
+    test('failed authentication - password required', async () => {
+      const payload = {
+        email: 'anEmail@gmail.com',
+      }
+
+      const response : Response = await api
+        .post('/api/register')
+        .send(payload);
+  
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('errors');
+      expect(response.body.errors).toHaveLength(2);
+      expect(response.body.errors[0]).toHaveProperty('msg', 'Password is required');
+      expect(response.body.errors[1]).toHaveProperty('msg', 'Password must contain at least 6 characters');
     });
 
   });
@@ -185,6 +250,20 @@ describe('Login microservice', () => {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('users');
         expect(response.body.users).toHaveLength(requestedUsers.length);
+    });
+
+    test('limit parameter must be a whole number', async () => {
+
+      const limit : string = 'limit';
+
+      const response : Response = await api
+        .get(`/api/list?limit=${limit}`)
+        .set('Authorization', token);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+        expect(response.body.errors).toHaveLength(1);
+        expect(response.body.errors[0]).toHaveProperty('msg', 'limit parameter must be a whole number');
     });
 
   });
