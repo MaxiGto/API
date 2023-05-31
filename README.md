@@ -1,5 +1,5 @@
 # API Challenge Conexa
-Una API desarrollada en Typescript, Node, Express y MongoDB que cuenta con 2 módulos, uno de Login y otro de Negocios. La misma fue construída siguiendo una arquitectura de microservicios.
+Una API desarrollada con Typescript, Node, Express y MongoDB que cuenta con 2 módulos, uno de Login y otro de Negocios. La misma fue construída siguiendo una arquitectura de microservicios.
 
 ![API_IMG](https://kozub.com.ar/wp-content/uploads/2021/01/What-is-an-API.png)
 
@@ -22,7 +22,7 @@ Se requiere configurar las siguientes variables de entorno en un fichero .env ub
   DATABASE_URL=
   DATABASE_URL_TEST=
 ```
-SECRETORPRIVATEKEY debe completarse con la llave secreta que se quiera utilizar para firmar y verificar los JWT.
+SECRETORPRIVATEKEY debe completarse con la llave secreta que se quiera utilizar para firmar y verificar los JWT.  
 En DATABASE_URL y DATABASE_URL_TEST se deben establecer los strings de conexión de la base de datos de MongoDB que se quiera utilizar para producción y para tests, respectivamente.
 
 ## Ejecutar la aplicación
@@ -70,7 +70,7 @@ El token obtenido debe enviarse en los headers de las peticiones que requieran a
 | `Authorization`| token | 
 
 #### Listado de usuarios
-*Requiere autenticación*
+*Requiere autenticación.*  
 Muestra el listado de usuario registrados.
 
 ```http
@@ -88,8 +88,8 @@ Es posible paginar la búsqueda enviando los siguientes query parameters:
 ## Endpoints Negocios
 
 #### Listado de usuarios
-*Requiere autenticación*
-*Solo puede ser consultado a través del endpoint de usuarios del módulo precedente*
+*Requiere autenticación.*  
+*Solo puede ser consultado a través del endpoint de usuarios del módulo precedente.*
 
 ```http
   GET /api/list
